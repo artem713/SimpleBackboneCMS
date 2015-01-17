@@ -5,22 +5,27 @@ define([
 	"jquery",
 	"underscore",
 	"backbone",
-	// Views to load
 	'views/tabs_view'
 ], function($, _, Backbone, tabsView){
 	var AppRouter = Backbone.Router.extend({
 		routes: {
-			'examples': 'showExamples',
-			'tabs/:id': 'showExample',
-			// Default
+			'tabs/:id': 'loadTab',
 			'*actions': 'defaultAction'
 		},
-
-		showExamples: function() {
-			exampleListView.render();
-		},
-		showExample: function(id) {
-			console.log("!!!!!!!!!!!!!!");
+		loadTab: function(id) {
+			if (!tabsView.rendered) {
+				tabsView.render();
+			}
+			require(["views/tabs/" + id], function(tabModel) {
+				if(!tabModel) {
+					return;
+				}
+				var tab = new tabModel();
+				tab.render();
+				$("#tab").html(tab.$el);
+			}, function(err) {
+				console.warn(err);
+			});
 		},
 		defaultAction: function(actions) {
 			tabsView.render();
@@ -29,6 +34,9 @@ define([
 
 	var initialize = function(){
 		var app_router = new AppRouter();
+		Backbone.View.goTo = function(location, options) {
+			app_router.navigate(location, options);
+		};
 		Backbone.history.start();
 	};
 

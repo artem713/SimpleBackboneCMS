@@ -11,10 +11,23 @@ define([
 		tagName: "li",
 		id: "tab-view",
 		className: "tab",
-		model: tabModel,
-		//template: _.template("<a href='<%= path =>'><%= title =></a>"),
+		template: _.template('<a href><%=title%></a>'),
+		events: {
+			"click a": "onOpenTabClick"
+		},
+		initialize: function(tab) {
+			this.model = new tabModel(tab);
+		},
+		onOpenTabClick: function(e) {
+			e.preventDefault();
+			this.openTab();
+		},
+		openTab: function(){
+			this.model.openTab();
+			Backbone.View.goTo("tabs/" + this.model.get("id"), {navigate: true});
+		},
 		render: function(){
-			this.$el.html("<a href=/tabs/" + this.model.id + ">" + this.model.title + "</a>");
+			this.$el.html(this.template(this.model.attributes));
 			return this;
 		}
 	});

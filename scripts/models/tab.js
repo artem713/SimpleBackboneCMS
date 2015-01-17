@@ -6,7 +6,19 @@ define([
 	"backbone"
 ], function($, Backbone) {
 	var Tab = Backbone.Model.extend({
-		urlRoot: "SimpleBackboneCMS/data/tabs.json"
+		urlRoot: "SimpleBackboneCMS/data/tabs.json",
+		initialize: function(tab) {
+			for (var prop in tab) {
+				this.set(prop, tab[prop]);
+			}
+		},
+		openTab: function() {
+			require(["views/tabs/" + this.id], function(tabModel) {
+				var tab = new tabModel();
+				tab.render();
+				$("#tab").html(tab.$el);
+			});
+		}
 	});
 	return Tab;
 });
